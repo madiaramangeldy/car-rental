@@ -1,0 +1,24 @@
+# Әр push және Pull Request кезінде жобаны жинап, барлық тесттерді іске қосады.
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 17 орнату
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Жинау және тесттер
+        run: mvn -B verify
