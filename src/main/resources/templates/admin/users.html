@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Пайдаланушылар')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1>Пайдаланушылар</h1>
+
+    <div class="table-wrap"><table class="table">
+        <thead>
+        <tr><th>ID</th><th>Аты-жөні</th><th>Email</th><th>Телефон</th><th>Рөл</th><th>Күйі</th><th>Әрекеттер</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="u : ${users}">
+            <td th:text="${u.id}"></td>
+            <td th:text="${u.fullName}"></td>
+            <td th:text="${u.email}"></td>
+            <td th:text="${u.phone}"></td>
+            <td>
+                <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="inline">
+                    <select name="role">
+                        <option th:each="r : ${roles}" th:value="${r}" th:text="${r.label}" th:selected="${r == u.role}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-ghost">OK</button>
+                </form>
+            </td>
+            <td>
+                <span th:if="${u.locked}" class="badge badge-cancelled">Бұғатталған</span>
+                <span th:if="${!u.locked and u.enabled}" class="badge badge-confirmed">Белсенді</span>
+                <span th:if="${!u.locked and !u.enabled}" class="badge badge-pending">Өшірілген</span>
+            </td>
+            <td class="actions">
+                <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm btn-ghost" th:text="${u.enabled} ? 'Өшіру' : 'Қосу'">Өшіру</button>
+                </form>
+                <form th:if="${u.locked}" th:action="@{/admin/users/{id}/unlock(id=${u.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm">Бұғаттан шығару</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

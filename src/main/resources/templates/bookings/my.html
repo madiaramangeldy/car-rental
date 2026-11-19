@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Менің брондарым')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1>Менің брондарым</h1>
+
+    <div class="empty" th:if="${#lists.isEmpty(bookings)}">
+        Сізде әзірге брон жоқ. <a th:href="@{/cars}">Көлік таңдау</a>
+    </div>
+
+    <div class="table-wrap" th:unless="${#lists.isEmpty(bookings)}"><table class="table">
+        <thead>
+        <tr>
+            <th>№</th><th>Көлік</th><th>Кезең</th><th>Тәулік</th><th>Сома</th><th>Күйі</th><th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${bookings}">
+            <td th:text="${b.id}"></td>
+            <td>
+                <div class="car-cell">
+                    <div class="thumb"><img th:replace="~{fragments/car :: photo(${b.car})}"></div>
+                    <div>
+                        <div th:text="${b.car.title}">Kia Rio</div>
+                        <span th:replace="~{fragments/car :: plate(${b.car.plateNumber})}"></span>
+                    </div>
+                </div>
+            </td>
+            <td th:text="${#temporals.format(b.startDate, 'dd.MM.yyyy')} + ' — ' + ${#temporals.format(b.endDate, 'dd.MM.yyyy')}"></td>
+            <td th:text="${b.days}"></td>
+            <td th:text="${#numbers.formatDecimal(b.totalPrice, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td>
+            <td><span th:class="'badge badge-' + ${#strings.toLowerCase(b.status.name())}" th:text="${b.status.label}"></span></td>
+            <td class="actions">
+                <a th:if="${b.contract != null}" th:href="@{/contracts/{id}(id=${b.contract.id})}" class="btn btn-sm btn-ghost">Келісімшарт</a>
+                <form th:if="${b.status.name() == 'PENDING'}" th:action="@{/bookings/{id}/cancel(id=${b.id})}"
+                      method="post" class="inline" data-confirm="Бронды болдырмауға сенімдісіз бе?">
+                    <button type="submit" class="btn btn-sm btn-danger">Болдырмау</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

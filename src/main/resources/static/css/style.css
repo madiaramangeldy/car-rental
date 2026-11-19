@@ -1,0 +1,546 @@
+/* =====================================================================
+   AutoRent — минималистік, ашық стиль.
+   Ақ фон, қою «графит» мәтін, жұмсақ көгілдір акцент, ірі жуан тақырыптар.
+   Барлық анимация prefers-reduced-motion параметрін құрметтейді.
+   ===================================================================== */
+
+/* Қаріптер: static/fonts/ ішіне файлдарды салсаңыз — қолданылады, әйтпесе жүйелік қаріп */
+@font-face {
+    font-family: "Unbounded";
+    src: local("Unbounded"), url("../fonts/Unbounded-Bold.woff2") format("woff2");
+    font-weight: 700; font-display: swap;
+}
+@font-face {
+    font-family: "Manrope";
+    src: local("Manrope"), url("../fonts/Manrope-Variable.woff2") format("woff2");
+    font-weight: 200 800; font-display: swap;
+}
+
+:root {
+    --ink: #15171C;
+    --ink-2: #23262D;
+    --ink-3: #343841;
+    --bg: #FFFFFF;
+    --soft: #F3F4F6;
+    --line: #E5E7EB;
+    --muted: #6B7280;
+    --blue: #3F74E0;         /* батырмалар (ақ мәтінмен AA контраст) */
+    --blue-dark: #2F5FC4;
+    --blue-bright: #6E9BFF;  /* безендіру */
+    --blue-soft: #DCE6FF;    /* белсенді карточка */
+    --ok: #15803D;
+    --danger: #C2361F;
+    --warn-bg: #FEF3C7;
+    --warn-ink: #78530A;
+
+    --display: "Unbounded", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+    --body: "Manrope", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+
+    --r-sm: 8px;
+    --r: 14px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+@view-transition { navigation: auto; } /* беттер арасында жұмсақ ауысу (Chrome/Edge) */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+main { flex: 1; width: 100%; padding: 28px 0 72px; }
+main.home { padding: 0; }
+
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.08; margin: 0 0 12px; letter-spacing: -.02em; }
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); }
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.6rem); }
+h3 { font-size: 1.15rem; letter-spacing: -.01em; }
+p { margin: 0 0 12px; }
+
+a { color: var(--blue); text-underline-offset: 3px; }
+a:hover { color: var(--blue-dark); }
+:focus-visible { outline: 3px solid var(--blue-bright); outline-offset: 3px; border-radius: 4px; }
+
+svg { stroke-linecap: round; stroke-linejoin: round; }
+
+.container { max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
+.container.narrow { max-width: 520px; }
+.container.medium { max-width: 800px; }
+.muted { color: var(--muted); }
+.center { text-align: center; }
+.inline { display: inline; }
+small { font-size: .85em; }
+
+/* ================================================================ Мәзір (капсула) */
+.topbar { padding: 16px 0; position: relative; z-index: 20; }
+.nav-pill {
+    display: flex; align-items: center; gap: 28px;
+    background: #fff; border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 8px 8px 26px; min-height: 60px;
+    box-shadow: 0 8px 30px rgba(21, 23, 28, .06);
+}
+.brand {
+    font-family: var(--display); font-weight: 700; font-size: 1.35rem; letter-spacing: -.03em;
+    color: var(--ink); text-decoration: none; white-space: nowrap;
+}
+.brand span { color: var(--blue-bright); }
+.brand:hover { color: var(--ink); }
+.menu { display: flex; gap: 6px; flex: 1; justify-content: center; flex-wrap: wrap; }
+.menu a {
+    color: var(--ink-3); text-decoration: none; font-size: .92rem; font-weight: 500;
+    padding: 8px 14px; border-radius: 999px; transition: background .2s, color .2s;
+}
+.menu a:hover { background: var(--soft); color: var(--ink); }
+.account { display: flex; align-items: center; gap: 14px; font-size: .9rem; }
+.account .who { color: var(--muted); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link-quiet { color: var(--ink); text-decoration: none; font-weight: 600; }
+.nav-toggle { display: none; }
+
+/* ================================================================ Батырмалар */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 999px;
+    background: var(--blue); color: #fff; font: 600 .95rem var(--body);
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: background .2s, color .2s, border-color .2s, transform .15s;
+}
+.btn:hover { background: var(--blue-dark); color: #fff; }
+.btn:active { transform: scale(.97); }
+.btn-blue { background: var(--blue); }
+.btn-dark { background: var(--ink); }
+.btn-dark:hover { background: var(--ink-3); }
+.btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { background: var(--soft); color: var(--ink); }
+.btn-danger { background: #fff; color: var(--danger); border-color: #F1C9C2; }
+.btn-danger:hover { background: #FDF0EE; color: var(--danger); }
+.btn-sm { min-height: 36px; padding: 0 14px; font-size: .86rem; }
+.btn-lg { min-height: 54px; padding: 0 28px; font-size: 1rem; }
+.btn-block { width: 100%; }
+
+.pill {
+    display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 18px;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+    color: var(--ink); font-size: .86rem; font-weight: 600; text-decoration: none;
+    transition: background .2s, color .2s, border-color .2s;
+}
+.pill svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .2s var(--ease); }
+.pill:hover svg { transform: translateX(3px); }
+.pill-blue { background: var(--blue-bright); border-color: var(--blue-bright); color: #fff; }
+.pill-blue:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+/* ================================================================ Hero */
+.hero-wrap { position: relative; }
+.page-home .topbar { position: absolute; left: 0; right: 0; top: 0; }
+
+.hero {
+    position: relative; min-height: 640px; background: var(--ink); color: #fff;
+    display: flex; align-items: flex-end; overflow: hidden; padding-bottom: 96px;
+}
+.hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-illustration { position: absolute; right: 5%; top: 13%; width: min(42%, 560px); opacity: .95; }
+.hero-shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(21,23,28,.25) 0%, rgba(21,23,28,.15) 40%, rgba(21,23,28,.85) 100%);
+}
+.hero-content {
+    position: relative; width: 100%;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: end;
+}
+.hero-title { font-size: clamp(2.6rem, 6.2vw, 5rem); margin: 0; }
+.hero-title .line { display: block; overflow: hidden; padding-bottom: .06em; }
+.hero-title .line > span { display: inline-block; }
+.hero-side p { color: rgba(255,255,255,.82); font-size: .98rem; max-width: 42ch; margin-bottom: 22px; }
+.hero-stats { display: flex; gap: 34px; margin: 0; }
+.hero-stats div { display: flex; flex-direction: column-reverse; }
+.hero-stats dd { margin: 0; font-family: var(--display); font-size: 2rem; font-weight: 700; line-height: 1; }
+.hero-stats dt { color: rgba(255,255,255,.7); font-size: .85rem; margin-top: 6px; }
+
+/* ================================================================ Іздеу виджеті */
+.booking-widget { position: relative; z-index: 5; margin: -62px auto 0; max-width: 1000px; }
+.booking-widget.is-static { margin: 0 0 28px; max-width: none; }
+.widget-tabs { display: flex; gap: 0; margin-left: 24px; flex-wrap: wrap; }
+.tab {
+    border: none; background: rgba(255,255,255,.72); color: var(--ink-3);
+    padding: 12px 20px; font: 600 .86rem var(--body); cursor: pointer;
+    border-radius: 10px 10px 0 0; transition: background .2s, color .2s;
+    backdrop-filter: blur(6px);
+}
+.booking-widget.is-static .tab { background: var(--soft); }
+.tab:hover { background: #fff; color: var(--ink); }
+.tab.is-active { background: #fff; color: var(--ink); }
+.booking-widget.is-static .tab.is-active { background: #fff; box-shadow: 0 -1px 0 var(--line), 1px 0 0 var(--line), -1px 0 0 var(--line); }
+.widget-fields {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 170px;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--r);
+    box-shadow: 0 18px 50px rgba(21, 23, 28, .12); overflow: hidden;
+}
+.booking-widget.is-static .widget-fields { box-shadow: none; }
+.widget-field {
+    display: flex; flex-direction: column; justify-content: center; gap: 2px;
+    padding: 14px 22px; font-size: .78rem; font-weight: 600; color: var(--muted);
+    border-right: 1px solid var(--line);
+}
+.widget-field input {
+    margin: 0; min-height: 0; padding: 2px 0; border: none; box-shadow: none;
+    font-size: .98rem; font-weight: 600; color: var(--ink); background: transparent;
+}
+.widget-field input:focus { box-shadow: none; }
+.widget-days { font-size: .98rem; font-weight: 600; color: var(--ink); padding: 2px 0; }
+.widget-days.is-empty { color: #9CA3AF; font-weight: 500; }
+.widget-submit {
+    border: none; background: var(--blue-bright); color: #fff; font: 700 1rem var(--body);
+    cursor: pointer; transition: background .2s; min-height: 72px;
+}
+.widget-submit:hover { background: var(--blue); }
+
+/* ================================================================ Бөлімдер */
+.section { padding-top: 88px; }
+.section-band { background: var(--soft); padding: 88px 0; margin-top: 88px; }
+.section-title { font-size: clamp(2rem, 4.2vw, 3rem); margin-bottom: 36px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 36px; }
+.section-head .section-title { margin: 0; }
+
+/* Санаттар */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+.cat-tile {
+    position: relative; display: block; aspect-ratio: 3 / 4; border-radius: var(--r-sm); overflow: hidden;
+    background: var(--ink); color: #fff; text-decoration: none; isolation: isolate;
+}
+.cat-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform .6s var(--ease); }
+.cat-tile::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(21,23,28,.55) 0%, rgba(21,23,28,0) 42%, rgba(21,23,28,0) 70%, rgba(21,23,28,.35) 100%);
+}
+.cat-tile.is-illustration { background: #E8ECF3; color: var(--ink); }
+.cat-tile.is-illustration::after { display: none; }
+.cat-tile.is-illustration img { object-fit: contain; padding: 35% 8% 20%; }
+.cat-tile:hover img { transform: scale(1.06); }
+.cat-name { position: absolute; top: 18px; left: 18px; right: 18px; font-family: var(--display); font-size: 1.35rem; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+.cat-count { position: absolute; left: 18px; bottom: 22px; font-size: .85rem; opacity: .85; }
+.cat-arrow {
+    position: absolute; right: 16px; bottom: 16px; width: 42px; height: 42px; border-radius: 50%;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    transition: transform .3s var(--ease), background .2s;
+}
+.cat-arrow svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 2.2; }
+.cat-arrow.is-accent { background: var(--blue-bright); }
+.cat-arrow.is-accent svg { stroke: #fff; }
+.cat-tile:hover .cat-arrow { transform: rotate(45deg); background: var(--blue-bright); }
+.cat-tile:hover .cat-arrow svg { stroke: #fff; }
+
+/* Танымал көліктер — біріктірілген қатар, белсенді карточка тінтуірмен ауысады */
+.trend-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: #fff; border: 1px solid var(--line);
+}
+.trend-card {
+    display: flex; flex-direction: column; gap: 14px; padding: 22px 20px 20px;
+    color: var(--ink); text-decoration: none; background: #fff;
+    border-right: 1px solid var(--line); transition: background .35s var(--ease);
+}
+.trend-card:last-child { border-right: none; }
+.trend-card h3 { min-height: 2.3em; margin: 0; }
+.trend-photo { aspect-ratio: 4 / 3; border-radius: var(--r-sm); overflow: hidden; background: var(--soft); }
+.trend-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s var(--ease); }
+.trend-photo img.is-illustration { object-fit: contain; padding: 10%; }
+.trend-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: auto; }
+.trend-card.is-active, .trend-card:hover { background: var(--blue-soft); color: var(--ink); }
+.trend-row:hover .trend-card.is-active:not(:hover) { background: #fff; }
+.trend-card:hover .trend-photo img { transform: scale(1.05); }
+.trend-card:hover .pill, .trend-card.is-active .pill { border-color: #fff; }
+
+.price { display: inline-flex; align-items: baseline; gap: 2px; white-space: nowrap; }
+.price strong { font-family: var(--display); font-size: 1.15rem; letter-spacing: -.02em; }
+.price small { color: var(--muted); font-size: .82rem; }
+.price-lg strong { font-size: 2rem; }
+
+/* Артықшылықтар — қою жолақ */
+.perks { background: var(--ink); color: #fff; }
+.perks-row { display: grid; grid-template-columns: repeat(4, 1fr); }
+.perk {
+    display: flex; align-items: center; gap: 18px; padding: 38px 26px;
+    transition: background .3s;
+}
+.perk:hover { background: var(--ink-2); }
+.perk svg { flex: none; width: 44px; height: 44px; fill: none; stroke: #fff; stroke-width: 1.6; }
+.perk p { margin: 0; font-size: .9rem; color: rgba(255,255,255,.82); line-height: 1.4; }
+
+/* Промо */
+.promo { background: linear-gradient(180deg, #1B1D23 0%, var(--ink) 100%); color: #fff; overflow: hidden; }
+.promo-inner { display: grid; grid-template-columns: 1fr 1.25fr auto; gap: 32px; align-items: center; padding-top: 80px; padding-bottom: 80px; }
+.promo-text h2 { font-size: clamp(2rem, 3.6vw, 2.8rem); margin-bottom: 14px; }
+.promo-text p { color: rgba(255,255,255,.75); max-width: 36ch; margin-bottom: 26px; }
+.promo-car { border-radius: var(--r); overflow: hidden; aspect-ratio: 16 / 10; background: var(--ink-2); }
+.promo-car img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.promo-car img.is-illustration { object-fit: contain; padding: 8%; }
+.promo-badge {
+    background: var(--blue-bright); padding: 26px 26px 24px; width: 200px; border-radius: 4px;
+}
+.promo-badge strong { display: block; font-family: var(--display); font-size: 3.2rem; line-height: 1; letter-spacing: -.03em; }
+.promo-badge span { display: block; margin-top: 10px; font-size: .95rem; line-height: 1.35; }
+
+/* ================================================================ Каталог */
+.page-title { padding: 24px 0 28px; }
+.page-title h1 { font-size: clamp(2.2rem, 4.6vw, 3.4rem); margin-bottom: 6px; }
+.result-note { margin: -10px 0 22px; color: var(--muted); }
+
+.car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
+.car-card {
+    display: flex; flex-direction: column; gap: 14px; padding: 20px;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--r);
+    color: var(--ink); text-decoration: none;
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s;
+}
+.car-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(21,23,28,.08); border-color: transparent; color: var(--ink); }
+.car-card-head h3 { margin: 0 0 2px; }
+.car-category { font-size: .84rem; color: var(--muted); }
+.car-photo { aspect-ratio: 16 / 10; border-radius: var(--r-sm); overflow: hidden; background: var(--soft); }
+.car-photo img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .5s var(--ease); }
+.car-photo img.is-illustration { object-fit: contain; padding: 8% 6% 5%; }
+.car-card:hover .car-photo img { transform: scale(1.05); }
+.car-card-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: auto; }
+.car-card:hover .pill { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ================================================================ Көлік беті */
+.back { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-3); text-decoration: none; font-weight: 600; margin: 8px 0 18px; }
+.back svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .2s; }
+.back:hover svg { transform: translateX(-3px); }
+.detail { display: grid; grid-template-columns: 1.5fr 1fr; gap: 36px; align-items: start; }
+.detail-photo { aspect-ratio: 16 / 10; border-radius: var(--r); }
+.detail-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 26px 0 8px; flex-wrap: wrap; }
+.detail-head h1 { margin: 2px 0 0; font-size: clamp(2rem, 4vw, 2.8rem); }
+.spec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 22px 0 24px; }
+.spec-grid div { background: var(--soft); border-radius: var(--r-sm); padding: 14px 16px; }
+.spec-grid dt { font-size: .8rem; color: var(--muted); }
+.spec-grid dd { margin: 4px 0 0; font-weight: 700; font-size: 1.05rem; }
+.lead { font-size: 1.05rem; color: var(--ink-3); max-width: 62ch; }
+.busy-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.busy-list li { background: var(--warn-bg); color: var(--warn-ink); border-radius: 999px; padding: 5px 14px; font-size: .88rem; font-weight: 600; }
+
+.booking-panel {
+    position: sticky; top: 20px; background: #fff; border: 1px solid var(--line);
+    border-radius: var(--r); padding: 26px; box-shadow: 0 18px 50px rgba(21,23,28,.07);
+}
+.booking-panel .price { margin-bottom: 20px; }
+.rules { margin: 20px 0 0; padding: 0; list-style: none; font-size: .88rem; color: var(--muted); }
+.rules li { padding: 8px 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; }
+.rules li strong { color: var(--ink); }
+
+/* Тірі есептеу */
+.quote { background: var(--soft); border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 16px; animation: quote-in .35s var(--ease); }
+.quote-row { display: flex; justify-content: space-between; gap: 12px; font-size: .9rem; color: var(--ink-3); padding: 3px 0; }
+.quote-discount { color: var(--ok); font-weight: 600; }
+.quote-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px dashed #D1D5DB; margin-top: 8px; padding-top: 10px; font-weight: 600; }
+.quote-total strong { font-family: var(--display); font-size: 1.5rem; letter-spacing: -.02em; }
+.quote-hint { margin: 8px 0 0; font-size: .82rem; color: var(--blue); }
+.quote-hint:empty { display: none; }
+.quote.is-error .quote-total strong { color: var(--danger); font-size: 1rem; font-family: var(--body); }
+@keyframes quote-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* ================================================================ KZ нөмір белгісі */
+.plate {
+    display: inline-flex; align-items: stretch; height: 30px; flex: none;
+    border: 2px solid var(--ink); border-radius: 5px; background: #fff;
+    font-family: var(--body); font-weight: 800; font-size: .95rem; letter-spacing: .05em;
+    color: var(--ink); overflow: hidden; vertical-align: middle; line-height: 1;
+}
+.plate-flag {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    width: 24px; background: #00AEEF; color: #fff; font-size: .5rem; letter-spacing: 0;
+}
+.plate-flag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #F5B800; }
+.plate-main { display: flex; align-items: center; padding: 0 8px; }
+.plate-region { display: flex; align-items: center; padding: 0 7px; border-left: 2px solid var(--ink); }
+.car-cell .plate { height: 24px; font-size: .78rem; margin-top: 4px; }
+.car-cell .plate-flag { width: 18px; }
+
+/* ================================================================ Формалар */
+.field, .form label { display: block; margin-bottom: 16px; font-size: .88rem; font-weight: 600; color: var(--ink); }
+.field-hint { font-weight: 400; color: var(--muted); }
+input, select, textarea {
+    display: block; width: 100%; margin-top: 6px; min-height: 48px; padding: 11px 14px;
+    border: 1px solid #D1D5DB; border-radius: 10px; background: #fff;
+    font: 500 1rem var(--body); color: var(--ink); transition: border-color .2s, box-shadow .2s;
+}
+textarea { min-height: 84px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue-bright); box-shadow: 0 0 0 4px rgba(110,155,255,.22); }
+input[type="checkbox"] { display: inline-block; width: 18px; min-height: 0; height: 18px; margin: 0 8px 0 0; vertical-align: middle; accent-color: var(--blue); }
+input[type="file"] { padding: 10px; background: var(--soft); }
+.field-error { display: block; color: var(--danger); font-size: .84rem; margin-top: 5px; font-weight: 500; }
+.form-row, .form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Ішкі беттердегі сүзгі (менеджер) */
+.filters { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 22px; }
+.filters label { font-size: .82rem; font-weight: 600; color: var(--muted); min-width: 240px; }
+
+/* ================================================================ Жалпы элементтер */
+.card { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 30px; margin-bottom: 20px; }
+.auth-card { margin-top: 24px; box-shadow: 0 18px 50px rgba(21,23,28,.07); }
+.auth-card h1 { font-size: 2rem; }
+.empty {
+    padding: 48px 24px; text-align: center; color: var(--muted);
+    background: var(--soft); border-radius: var(--r);
+}
+.empty p { margin-top: 14px; }
+.page-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 12px 0 24px; }
+.page-head h1 { margin: 0; }
+main > .container > h1 { margin-top: 12px; }
+
+/* Хабарламалар + сәтті әрекет анимациясы */
+.alert { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 12px; margin-bottom: 20px; font-size: .95rem; font-weight: 500; }
+.alert-success { background: #ECFDF3; color: #14532D; }
+.alert-error { background: #FEF1EF; color: #8E2414; }
+.check-icon { flex: none; width: 30px; height: 30px; fill: none; stroke: var(--ok); stroke-width: 3.5; }
+.check-circle { stroke-dasharray: 145; stroke-dashoffset: 145; animation: draw .6s var(--ease) .1s forwards; }
+.check-mark { stroke-dasharray: 36; stroke-dashoffset: 36; animation: draw .35s var(--ease) .6s forwards; }
+.alert-success { animation: pop .45s var(--ease); }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop { 0% { opacity: 0; transform: scale(.96) translateY(-6px); } 100% { opacity: 1; transform: none; } }
+
+/* Кестелер */
+.table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--line); border-radius: var(--r); }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+.table tbody tr { transition: background .15s; }
+.table tbody tr:hover { background: #FAFBFC; }
+.table tbody tr:last-child td { border-bottom: none; }
+.table thead th { background: var(--soft); font-size: .8rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.table.kv th { width: 42%; color: var(--muted); font-weight: 500; background: none; font-size: .95rem; }
+.table.small td, .table.small th { padding: 8px 12px; font-size: .88rem; }
+.thumb { width: 84px; aspect-ratio: 16 / 10; border-radius: 6px; overflow: hidden; background: var(--soft); flex: none; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb img.is-illustration { object-fit: contain; padding: 4px; }
+.car-cell { display: flex; align-items: center; gap: 14px; font-weight: 600; }
+.actions { white-space: nowrap; }
+.actions > * + * { margin-left: 6px; }
+.row-warn td { background: #FFFBEB; }
+code { font-size: .82rem; background: var(--soft); padding: 2px 6px; border-radius: 4px; }
+
+.badge { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.badge-pending, .badge-car-maintenance { background: var(--warn-bg); color: var(--warn-ink); }
+.badge-confirmed, .badge-c-active, .badge-car-available { background: #DCFCE7; color: #14532D; }
+.badge-completed, .badge-c-closed { background: var(--blue-soft); color: #1E3A8A; }
+.badge-cancelled, .badge-c-terminated, .badge-car-retired { background: #FEE2E2; color: #8E2414; }
+
+/* Әкімші формасы */
+.photo-edit { display: grid; grid-template-columns: 220px 1fr; gap: 20px; align-items: start; margin-bottom: 20px; }
+
+/* Келісімшарт */
+.toolbar { margin: 8px 0 16px; }
+.contract { max-width: 860px; margin: 0 auto; padding: 44px 52px; }
+.contract h1 { font-size: 1.5rem; }
+.contract h3 { margin-top: 28px; }
+.signatures { display: flex; justify-content: space-between; gap: 24px; margin-top: 52px; }
+.demo { margin-top: 18px; font-size: .9rem; }
+.demo summary { cursor: pointer; color: var(--muted); }
+
+/* ================================================================ Подвал */
+.footer { background: var(--soft); color: var(--ink-3); padding: 64px 0 0; font-size: .9rem; }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 32px; }
+.footer-brand p { color: var(--muted); max-width: 34ch; margin-top: 14px; }
+.footer h4 { font-family: var(--body); font-size: .9rem; letter-spacing: 0; margin-bottom: 14px; }
+.footer-grid > div:not(.footer-brand) { display: flex; flex-direction: column; gap: 8px; }
+.footer-grid a { color: var(--muted); text-decoration: none; }
+.footer-grid a:hover { color: var(--ink); }
+.footer-grid span { color: var(--muted); }
+.footer-bottom { display: flex; justify-content: space-between; gap: 16px; padding-top: 22px; padding-bottom: 22px; margin-top: 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+
+/* ================================================================ Скелетон (сурет жүктелгенше) */
+.is-loading {
+    background-image: linear-gradient(100deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 70%);
+    background-size: 220% 100%;
+    background-position: 120% 0;
+}
+.is-loading { animation: shimmer 1.3s linear infinite; }
+@keyframes shimmer { to { background-position: -120% 0; } }
+
+/* ================================================================ Анимациялар */
+main { animation: page-in .45s var(--ease) both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Hero: фон баяу жақындайды, тақырып жолдары төменнен шығады */
+.hero-bg { animation: hero-zoom 2.4s var(--ease) both; }
+@keyframes hero-zoom { from { transform: scale(1.12); } to { transform: scale(1); } }
+.hero-illustration { animation: drive-in 1.2s var(--ease) .2s both; }
+@keyframes drive-in { from { transform: translateX(-120px); opacity: 0; } to { transform: none; opacity: .95; } }
+.hero-title .line > span { animation: line-up .9s var(--ease) both; }
+.hero-title .line:nth-child(2) > span { animation-delay: .12s; }
+@keyframes line-up { from { transform: translateY(105%); } to { transform: none; } }
+.hero-side { animation: fade-up .9s var(--ease) .35s both; }
+.page-home .booking-widget { animation: fade-up .9s var(--ease) .5s both; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* Скроллда пайда болу: JS тек экраннан төмендегі элементтерге .reveal-pending қосады */
+.reveal-pending { opacity: 0; transform: translateY(28px); }
+.reveal-pending.reveal-drive { transform: translateX(-80px); }
+.reveal-in { opacity: 1; transform: none; transition: opacity .7s var(--ease), transform .8s var(--ease); transition-delay: var(--d, 0s); }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    .reveal-pending { opacity: 1; transform: none; }
+    @view-transition { navigation: none; }
+}
+
+/* ================================================================ Бейімделу */
+@media (max-width: 1000px) {
+    .nav-pill { flex-wrap: wrap; border-radius: 26px; padding: 8px 8px 8px 22px; gap: 12px; }
+    .nav-toggle {
+        display: inline-flex; align-items: center; margin-left: auto; order: 2; height: 40px; padding: 0 16px;
+        border: 1px solid var(--line); border-radius: 999px; background: #fff; font: 600 .9rem var(--body); cursor: pointer;
+    }
+    .account { order: 3; }
+    .account .who { display: none; }
+    .menu { order: 4; flex: 1 1 100%; display: none; flex-direction: column; gap: 2px; padding: 4px 0 8px; }
+    .nav-pill.is-open .menu { display: flex; }
+    .hero { min-height: 560px; }
+    .hero-content { grid-template-columns: 1fr; gap: 22px; }
+    .widget-fields { grid-template-columns: 1fr 1fr; }
+    .widget-field:nth-child(2) { border-right: none; }
+    .widget-field:nth-child(3) { border-top: 1px solid var(--line); }
+    .widget-submit { border-top: 1px solid var(--line); min-height: 60px; }
+    .trend-row { grid-template-columns: 1fr 1fr; }
+    .trend-card:nth-child(2) { border-right: none; }
+    .trend-card:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .perks-row { grid-template-columns: 1fr 1fr; }
+    .promo-inner { grid-template-columns: 1fr; }
+    .promo-badge { width: auto; }
+    .detail { grid-template-columns: 1fr; }
+    .booking-panel { position: static; }
+    .spec-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+    .container { padding-left: 16px; padding-right: 16px; }
+    .widget-tabs { margin-left: 8px; overflow-x: auto; flex-wrap: nowrap; }
+    .tab { white-space: nowrap; padding: 10px 14px; }
+    .widget-fields, .form-row, .form .row, .photo-edit { grid-template-columns: 1fr; }
+    .widget-field { border-right: none; border-top: 1px solid var(--line); }
+    .widget-field:first-child { border-top: none; }
+    .trend-row, .perks-row, .footer-grid { grid-template-columns: 1fr; }
+    .cat-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cat-name { font-size: 1.05rem; top: 14px; left: 14px; }
+    .cat-count { left: 14px; bottom: 16px; }
+    .cat-arrow { width: 36px; height: 36px; right: 12px; bottom: 12px; }
+    .trend-card { border-right: none; border-bottom: 1px solid var(--line); }
+    .hero-stats { gap: 22px; }
+    .section, .section-band { padding-top: 64px; }
+    .section-band { margin-top: 64px; padding-bottom: 64px; }
+    .contract { padding: 24px; }
+    .footer-bottom { flex-direction: column; }
+}
+
+@media print {
+    .topbar, .footer, .no-print { display: none; }
+    main { animation: none; }
+    .card { border: none; }
+}

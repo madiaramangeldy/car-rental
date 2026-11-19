@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Келісімшарттар')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <h1>Келісімшарттар</h1>
+
+    <div class="empty" th:if="${#lists.isEmpty(contracts)}">Келісімшарттар әзірге жоқ.</div>
+
+    <div class="table-wrap" th:unless="${#lists.isEmpty(contracts)}"><table class="table">
+        <thead>
+        <tr><th>Нөмірі</th><th>Клиент</th><th>Көлік</th><th>Сома</th><th>Кепілдік</th><th>Күйі</th><th>Жасалды</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${contracts}">
+            <td th:text="${c.contractNumber}"></td>
+            <td th:text="${c.booking.user.fullName}"></td>
+            <td th:text="${c.booking.car.title}"></td>
+            <td th:text="${#numbers.formatDecimal(c.totalAmount, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td>
+            <td th:text="${#numbers.formatDecimal(c.deposit, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td>
+            <td><span th:class="'badge badge-c-' + ${#strings.toLowerCase(c.status.name())}" th:text="${c.status.label}"></span></td>
+            <td th:text="${#temporals.format(c.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td><a th:href="@{/contracts/{id}(id=${c.id})}" class="btn btn-sm btn-ghost">Ашу</a></td>
+        </tr>
+        </tbody>
+    </table></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

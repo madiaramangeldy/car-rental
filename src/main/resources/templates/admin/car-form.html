@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Көлік')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container medium">
+    <a class="back" th:href="@{/admin/cars}">Тізімге оралу</a>
+    <div class="card">
+        <h1 th:text="${carForm.id == null} ? 'Жаңа көлік' : 'Көлікті өзгерту'">Көлік</h1>
+
+        <!-- multipart: фото жүктеу үшін. CSRF токенін Thymeleaf автоматты қосады -->
+        <form th:action="@{/admin/cars}" th:object="${carForm}" method="post"
+              enctype="multipart/form-data" class="form" novalidate>
+            <input type="hidden" th:field="*{id}">
+
+            <div class="photo-edit">
+                <div class="car-photo">
+                    <img th:if="*{currentImageFileName != null}"
+                         th:src="@{/images/cars/{f}(f=*{currentImageFileName})}" alt="Ағымдағы фото">
+                    <img th:if="*{currentImageFileName == null}" class="is-illustration"
+                         th:src="*{category != null} ? @{/img/cars/{c}.svg(c=*{#strings.toLowerCase(category.name())})} : @{/img/cars/economy.svg}"
+                         alt="Фото жоқ">
+                </div>
+                <div>
+                    <label>Фото <span class="field-hint">(JPEG, PNG немесе WebP, 5 МБ-қа дейін)</span>
+                        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-max-size="5242880">
+                        <span class="field-error" th:if="${photoError}" th:text="${photoError}"></span>
+                    </label>
+                    <label th:if="*{currentImageFileName != null}">
+                        <input type="checkbox" th:field="*{removePhoto}"> Фотоны өшіру
+                    </label>
+                </div>
+            </div>
+
+            <div class="row">
+                <label>Маркасы
+                    <input type="text" th:field="*{brand}" maxlength="50" required>
+                    <span class="field-error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                </label>
+                <label>Моделі
+                    <input type="text" th:field="*{model}" maxlength="50" required>
+                    <span class="field-error" th:if="${#fields.hasErrors('model')}" th:errors="*{model}"></span>
+                </label>
+            </div>
+            <div class="row">
+                <label>Шығарылған жылы
+                    <input type="number" th:field="*{manufactureYear}" min="1995" max="2030" required>
+                    <span class="field-error" th:if="${#fields.hasErrors('manufactureYear')}" th:errors="*{manufactureYear}"></span>
+                </label>
+                <label>Мемлекеттік нөмір
+                    <input type="text" th:field="*{plateNumber}" placeholder="123ABC02" maxlength="8" required>
+                    <span class="field-error" th:if="${#fields.hasErrors('plateNumber')}" th:errors="*{plateNumber}"></span>
+                </label>
+            </div>
+            <div class="row">
+                <label>Санат
+                    <select th:field="*{category}">
+                        <option value="">Таңдаңыз</option>
+                        <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}"></option>
+                    </select>
+                    <span class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
+                </label>
+                <label>Күйі
+                    <select th:field="*{status}">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}"></option>
+                    </select>
+                </label>
+            </div>
+            <div class="row">
+                <label>Тәуліктік баға, ₸
+                    <input type="number" th:field="*{pricePerDay}" min="1000" step="any" required>
+                    <span class="field-error" th:if="${#fields.hasErrors('pricePerDay')}" th:errors="*{pricePerDay}"></span>
+                </label>
+                <label>Орын саны
+                    <input type="number" th:field="*{seats}" min="2" max="9" required>
+                    <span class="field-error" th:if="${#fields.hasErrors('seats')}" th:errors="*{seats}"></span>
+                </label>
+            </div>
+            <label>Сипаттамасы
+                <textarea th:field="*{description}" rows="4" maxlength="1000"></textarea>
+            </label>
+            <button type="submit" class="btn btn-lg btn-block">Көлікті сақтау</button>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

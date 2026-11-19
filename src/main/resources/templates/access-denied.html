@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Қол жеткізу жоқ')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container narrow center">
+    <div class="card">
+        <h1>403 — Қол жеткізуге рұқсат жоқ</h1>
+        <p>Бұл бетті көруге сіздің рөліңізде құқық жоқ. Әрекет аудит журналына тіркелді.</p>
+        <a th:href="@{/}" class="btn">Басты бетке</a>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

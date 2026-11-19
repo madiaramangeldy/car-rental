@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Автопарк')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main>
+    <div class="container">
+        <div class="page-title">
+            <h1>Автопарк</h1>
+            <p class="muted"><span th:attr="data-count=${#lists.size(cars)}" th:text="${#lists.size(cars)}">8</span> көлік жалға беруге дайын</p>
+        </div>
+
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <form th:action="@{/cars}" method="get" class="booking-widget is-static" aria-label="Сүзгілер">
+            <div class="widget-tabs" role="tablist" aria-label="Санат">
+                <button type="button" class="tab" th:classappend="${selectedCategory == null} ? 'is-active'"
+                        data-category="" role="tab">Барлығы</button>
+                <button type="button" class="tab" th:each="c : ${categories}"
+                        th:classappend="${c == selectedCategory} ? 'is-active'"
+                        th:attr="data-category=${c}" th:text="${c.label}" role="tab">Эконом</button>
+            </div>
+            <input type="hidden" name="category" id="widgetCategory" th:value="${selectedCategory}">
+            <div class="widget-fields">
+                <label class="widget-field">Алу күні
+                    <input type="date" name="from" id="searchFrom" th:value="${from}" th:min="${today}">
+                </label>
+                <label class="widget-field">Қайтару күні
+                    <input type="date" name="to" id="searchTo" th:value="${to}" th:min="${today}">
+                </label>
+                <div class="widget-field">Мерзімі
+                    <output id="searchDays" class="widget-days">Күндерді таңдаңыз</output>
+                </div>
+                <button type="submit" class="widget-submit">Көрсету</button>
+            </div>
+        </form>
+
+        <p class="result-note" th:if="${from != null and to != null}"
+           th:text="${#temporals.format(from, 'dd.MM.yyyy')} + ' – ' + ${#temporals.format(to, 'dd.MM.yyyy')} + ' аралығында бос көліктер'"></p>
+
+        <div class="empty" th:if="${#lists.isEmpty(cars)}">
+            Бұл сүзгіге сәйкес бос көлік жоқ. Басқа күндерді немесе санатты таңдап көріңіз.
+            <p><a th:href="@{/cars}" class="pill">Сүзгіні тазалау</a></p>
+        </div>
+
+        <div class="car-grid">
+            <th:block th:each="car : ${cars}">
+                <a th:replace="~{fragments/car :: card(${car}, ${from}, ${to})}"></a>
+            </th:block>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

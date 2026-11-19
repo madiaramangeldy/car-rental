@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Келісімшарт ' + ${contract.contractNumber})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <div class="no-print toolbar">
+        <button type="button" class="btn" data-print>Басып шығару / PDF</button>
+    </div>
+
+    <article class="card contract">
+        <h1 class="center">Көлік құралын жалдау келісімшарты № <span th:text="${contract.contractNumber}"></span></h1>
+        <p class="center muted" th:text="'Жасалған күні: ' + ${#temporals.format(contract.createdAt, 'dd.MM.yyyy')}"></p>
+        <p class="center">
+            <span th:class="'badge badge-c-' + ${#strings.toLowerCase(contract.status.name())}" th:text="${contract.status.label}"></span>
+        </p>
+
+        <h3>1. Тараптар</h3>
+        <p><strong>Жалға беруші:</strong> «AutoRent» ЖШС, атынан менеджер <span th:text="${contract.issuedBy}"></span>.</p>
+        <p><strong>Жалға алушы:</strong>
+            <span th:text="${booking.user.fullName}"></span>,
+            жүргізуші куәлігі № <span th:text="${booking.user.driverLicense}"></span>,
+            тел. <span th:text="${booking.user.phone}"></span>.</p>
+
+        <h3>2. Келісімшарт нысаны</h3>
+        <table class="table kv">
+            <tr><th>Көлік</th><td th:text="${booking.car.title}"></td></tr>
+            <tr><th>Мемлекеттік нөмір</th><td th:text="${booking.car.plateNumber}"></td></tr>
+            <tr><th>Шығарылған жылы</th><td th:text="${booking.car.manufactureYear}"></td></tr>
+            <tr><th>Жалдау кезеңі</th>
+                <td th:text="${#temporals.format(booking.startDate, 'dd.MM.yyyy')} + ' — ' + ${#temporals.format(booking.endDate, 'dd.MM.yyyy')} + ' (' + ${booking.days} + ' тәулік)'"></td></tr>
+        </table>
+
+        <h3>3. Төлем шарттары</h3>
+        <table class="table kv">
+            <tr><th>Тәуліктік баға</th><td th:text="${#numbers.formatDecimal(booking.car.pricePerDay, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td></tr>
+            <tr><th>Жалпы сома (жеңілдікпен)</th><td><strong th:text="${#numbers.formatDecimal(contract.totalAmount, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></strong></td></tr>
+            <tr><th>Кепілдік (қайтарылады)</th><td th:text="${#numbers.formatDecimal(contract.deposit, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td></tr>
+        </table>
+
+        <h3>4. Тараптардың міндеттері</h3>
+        <ol>
+            <li>Жалға алушы көлікті техникалық жарамды күйде, толық жанармай багымен қайтаруға міндетті.</li>
+            <li>Көлікті үшінші тұлғаларға беруге және ҚР аумағынан тыс шығаруға тыйым салынады.</li>
+            <li>Кешіктірілген әр тәулік үшін тәуліктік бағаның 150% мөлшерінде айыппұл төленеді.</li>
+            <li>Жалдау кезеңінде келтірілген айыппұлдар мен залалды жалға алушы өтейді.</li>
+            <li>Кепілдік көлік зақымсыз қайтарылғаннан кейін 3 жұмыс күні ішінде қайтарылады.</li>
+        </ol>
+
+        <div class="signatures">
+            <div>Жалға беруші: ____________</div>
+            <div>Жалға алушы: ____________</div>
+        </div>
+    </article>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

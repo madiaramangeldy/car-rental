@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${car.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main>
+    <div class="container">
+        <a class="back" th:href="@{/cars}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12 H5 M11 6 L5 12 L11 18"/></svg>
+            Автопарк
+        </a>
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="detail">
+            <section>
+                <div class="detail-photo car-photo"><img th:replace="~{fragments/car :: photo(${car})}"></div>
+
+                <div class="detail-head">
+                    <div>
+                        <span class="car-category" th:text="${car.category.label}">Бизнес</span>
+                        <h1 th:text="${car.title}">Toyota Camry</h1>
+                    </div>
+                    <span th:replace="~{fragments/car :: plate(${car.plateNumber})}"></span>
+                </div>
+
+                <dl class="spec-grid">
+                    <div><dt>Шығарылған жылы</dt><dd th:text="${car.manufactureYear}">2022</dd></div>
+                    <div><dt>Орын саны</dt><dd th:text="${car.seats}">5</dd></div>
+                    <div><dt>Санат</dt><dd th:text="${car.category.label}">Бизнес</dd></div>
+                    <div><dt>Күйі</dt><dd th:text="${car.status.label}">Қолжетімді</dd></div>
+                </dl>
+
+                <!-- th:text HTML-ді экрандайды → XSS мүмкін емес -->
+                <p class="lead" th:text="${car.description}"></p>
+
+                <h3>Бос емес күндер</h3>
+                <p class="muted" th:if="${#lists.isEmpty(busy)}">Алдағы брондар жоқ — кез келген күнге брондауға болады.</p>
+                <ul class="busy-list" th:unless="${#lists.isEmpty(busy)}">
+                    <li th:each="b : ${busy}"
+                        th:text="${#temporals.format(b.startDate, 'dd.MM')} + ' – ' + ${#temporals.format(b.endDate, 'dd.MM.yyyy')}"></li>
+                </ul>
+            </section>
+
+            <!-- Брондау панелі. data-* мәндері тек экрандағы алдын ала есептеу үшін; нақты сома серверде есептеледі -->
+            <aside class="booking-panel" th:attr="data-price=${car.pricePerDay}">
+                <div class="price price-lg">
+                    <strong th:text="${#numbers.formatDecimal(car.pricePerDay, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'">15 000 ₸</strong><small>/тәулік</small>
+                </div>
+
+                <form sec:authorize="isAuthenticated()" th:if="${car.status.name() == 'AVAILABLE'}"
+                      th:action="@{/bookings}" th:object="${bookingForm}" method="post">
+                    <input type="hidden" th:field="*{carId}">
+                    <div class="form-row">
+                        <label class="field">Алу күні
+                            <input type="date" th:field="*{startDate}" th:min="${today}" required>
+                        </label>
+                        <label class="field">Қайтару күні
+                            <input type="date" th:field="*{endDate}" th:min="${today}" required>
+                        </label>
+                    </div>
+
+                    <!-- Есептеу: JS күндерді таңдағанда толтырады -->
+                    <div class="quote" id="quote" hidden>
+                        <div class="quote-row"><span id="quoteBase">0 тәулік</span><span id="quoteBaseSum">0 ₸</span></div>
+                        <div class="quote-row quote-discount" id="quoteDiscountRow" hidden><span id="quoteDiscountLabel">Жеңілдік</span><span id="quoteDiscount">0 ₸</span></div>
+                        <div class="quote-row"><span>Кепілдік (қайтарылады)</span><span id="quoteDeposit">0 ₸</span></div>
+                        <div class="quote-total"><span>Барлығы</span><strong id="quoteTotal">0 ₸</strong></div>
+                        <p class="quote-hint" id="quoteHint"></p>
+                    </div>
+
+                    <label class="field">Түсініктеме <span class="field-hint">(міндетті емес)</span>
+                        <textarea th:field="*{comment}" maxlength="500" rows="2"></textarea>
+                    </label>
+                    <button type="submit" class="btn btn-blue btn-lg btn-block">Брондау</button>
+                </form>
+
+                <ul class="rules">
+                    <li><span>7 тәуліктен бастап</span><strong>−10%</strong></li>
+                    <li><span>14 тәуліктен бастап</span><strong>−15%</strong></li>
+                    <li><span>Кепілдік</span><strong>2 тәуліктің құны</strong></li>
+                    <li><span>Ең ұзақ мерзім</span><strong>30 тәулік</strong></li>
+                </ul>
+
+                <div class="alert alert-error" th:if="${car.status.name() != 'AVAILABLE'}">
+                    Бұл көлік қазір жалға берілмейді.
+                </div>
+
+                <div sec:authorize="isAnonymous()">
+                    <p class="muted">Брондау үшін жүйеге кіріңіз немесе тіркеліңіз.</p>
+                    <a th:href="@{/login}" class="btn btn-blue btn-lg btn-block">Кіру</a>
+                    <p class="center"><a th:href="@{/register}">Тіркелу</a></p>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
