@@ -3,6 +3,8 @@ package kz.autorent.service;
 import kz.autorent.model.AuditLog;
 import kz.autorent.repository.AuditLogRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -19,6 +21,11 @@ public class AuditService {
         this.repository = repository;
     }
 
+    /**
+     * REQUIRES_NEW: негізгі транзакция кері қайтарылса да (мысалы, AccessDeniedException),
+     * аудит жазбасы сақталады.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void log(String username, String action, String details) {
         AuditLog entry = new AuditLog();
         entry.setUsername(truncate(username == null ? "anonymous" : username, 100));
