@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" role="img" aria-label="car">
+<ellipse cx="240" cy="211" rx="205" ry="9" fill="#1E2328" opacity=".14"/>
+<path d="M44 170 L44 140 C44 124 54 116 70 112 L108 106 C126 84 150 60 176 52 L384 50 C408 50 420 62 426 84 L434 120 C436 130 436 140 436 150 L436 170 C436 176 432 180 426 180 L54 180 C48 180 44 176 44 170 Z" fill="#6E8259" stroke="#4B5A3C" stroke-width="3" stroke-linejoin="round"/>
+<path d="M134 104 C150 84 166 70 184 66 L236 64 L236 104 Z" fill="#D6E3EA" stroke="#4B5A3C" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M246 64 L320 63 L320 104 L246 104 Z" fill="#D6E3EA" stroke="#4B5A3C" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M330 63 L396 62 C406 62 412 70 414 82 L418 104 L330 104 Z" fill="#D6E3EA" stroke="#4B5A3C" stroke-width="2.5" stroke-linejoin="round"/>
+<line x1="241" y1="66" x2="241" y2="174" stroke="#4B5A3C" stroke-width="2" opacity=".7"/>
+<line x1="325" y1="66" x2="325" y2="174" stroke="#4B5A3C" stroke-width="2" opacity=".7"/>
+<rect x="214" y="120" width="18" height="4" rx="2" fill="#4B5A3C" opacity=".8"/>
+<rect x="300" y="120" width="18" height="4" rx="2" fill="#4B5A3C" opacity=".8"/>
+<rect x="48" y="128" width="16" height="7" rx="3" fill="#F5B800"/>
+<rect x="430" y="118" width="8" height="12" rx="2" fill="#D2402B"/>
+<circle cx="120" cy="182" r="29" fill="#1E2328"/>
+<circle cx="120" cy="182" r="14" fill="#A9B4BD"/>
+<circle cx="120" cy="182" r="5" fill="#5B6670"/>
+<circle cx="370" cy="182" r="29" fill="#1E2328"/>
+<circle cx="370" cy="182" r="14" fill="#A9B4BD"/>
+<circle cx="370" cy="182" r="5" fill="#5B6670"/>
+</svg>
