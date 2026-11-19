@@ -1,0 +1,21 @@
+# Әр бөліктің жауаптысы. PR ашылғанда GitHub оларды автоматты түрде review-ге шақырады.
+
+*                                   @madiaramangeldy
+
+/pom.xml                            @Kuansh2004
+/src/main/resources/*.yml           @Kuansh2004
+/.github/                           @Kuansh2004
+
+/src/main/java/kz/autorent/model/       @madiaramangeldy
+/src/main/java/kz/autorent/repository/  @madiaramangeldy
+/src/main/java/kz/autorent/service/     @madiaramangeldy
+/src/main/java/kz/autorent/web/         @madiaramangeldy @doszhan2005
+/src/main/resources/templates/          @madiaramangeldy
+/docs/02-design.md                      @madiaramangeldy
+
+/src/main/java/kz/autorent/security/    @doszhan2005
+/docs/01-analysis.md                    @doszhan2005
+/docs/03-security.md                    @doszhan2005
+
+/src/test/                              @erkinruslanuly-collab
+/docs/04-testing.md                     @erkinruslanuly-collab
