@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Кіру')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container narrow">
+    <div class="card auth-card">
+        <h1>Жүйеге кіру</h1>
+
+        <div th:replace="~{fragments/layout :: flash}"></div>
+        <div class="alert alert-error" th:if="${param.error}">Email немесе құпиясөз қате.</div>
+        <div class="alert alert-error" th:if="${param.locked}">
+            Сәтсіз әрекеттер тым көп болғандықтан аккаунт 15 минутқа уақытша бұғатталды.
+        </div>
+        <div class="alert alert-error" th:if="${param.disabled}">Аккаунт өшірілген. Әкімшіге хабарласыңыз.</div>
+        <div class="alert alert-success" th:if="${param.logout}">Сіз жүйеден шықтыңыз.</div>
+
+        <form th:action="@{/login}" method="post" class="form">
+            <label>Email
+                <input type="email" name="email" required autofocus autocomplete="username">
+            </label>
+            <label>Құпиясөз
+                <input type="password" name="password" required autocomplete="current-password">
+            </label>
+            <button type="submit" class="btn btn-block">Кіру</button>
+        </form>
+        <p class="muted center">Аккаунтыңыз жоқ па? <a th:href="@{/register}">Тіркелу</a></p>
+
+        <details class="demo">
+            <summary>Демо-аккаунттар</summary>
+            <table class="table small">
+                <tr><td>Әкімші</td><td>admin@autorent.kz</td><td>Admin123!</td></tr>
+                <tr><td>Менеджер</td><td>manager@autorent.kz</td><td>Manager123!</td></tr>
+                <tr><td>Клиент</td><td>client@autorent.kz</td><td>Client123!</td></tr>
+            </table>
+        </details>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

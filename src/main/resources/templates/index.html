@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Көлік жалдау')}"></head>
+<body class="page-home">
+
+<div class="hero-wrap">
+    <header th:replace="~{fragments/layout :: nav}"></header>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+        <!-- 1) static/img/hero.jpg  2) ең қымбат көліктің фотосы  3) иллюстрация -->
+        <img class="hero-bg" th:if="${heroImage != null}" th:src="@{${heroImage}}" alt="">
+        <img class="hero-bg" th:if="${heroImage == null and heroCar != null}"
+             th:src="@{/images/cars/{f}(f=${heroCar.imageFileName})}" alt="">
+        <img class="hero-illustration" th:if="${heroImage == null and heroCar == null}" th:src="@{/img/cars/comfort.svg}" alt="">
+        <div class="hero-shade" aria-hidden="true"></div>
+
+        <div class="container hero-content">
+            <h1 class="hero-title">
+                <span class="line"><span>Көлік жалдау</span></span>
+                <span class="line"><span>оңай әрі жылдам</span></span>
+            </h1>
+            <div class="hero-side">
+                <p>Бос көлікті күндер бойынша табыңыз, құнын бірден көріңіз. Менеджер растағаннан кейін келісімшарт жеке кабинетте дайын болады.</p>
+                <dl class="hero-stats">
+                    <div><dt>көлік</dt><dd th:attr="data-count=${carCount}" th:text="${carCount}">8</dd></div>
+                    <div><dt>санат</dt><dd th:attr="data-count=${categoryCount}" th:text="${categoryCount}">5</dd></div>
+                    <div><dt>дейін жеңілдік</dt><dd data-count="15" data-suffix="%">15%</dd></div>
+                </dl>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Іздеу виджеті ===== -->
+    <div class="container">
+        <form th:action="@{/cars}" method="get" class="booking-widget" aria-label="Бос көліктерді іздеу">
+            <div class="widget-tabs" role="tablist" aria-label="Санат">
+                <button type="button" class="tab is-active" data-category="" role="tab" aria-selected="true">Барлығы</button>
+                <button type="button" class="tab" th:each="c : ${categories}"
+                        th:attr="data-category=${c}" th:text="${c.label}" role="tab" aria-selected="false">Эконом</button>
+            </div>
+            <input type="hidden" name="category" value="" id="widgetCategory">
+            <div class="widget-fields">
+                <label class="widget-field">Алу күні
+                    <input type="date" name="from" id="searchFrom">
+                </label>
+                <label class="widget-field">Қайтару күні
+                    <input type="date" name="to" id="searchTo">
+                </label>
+                <div class="widget-field">Мерзімі
+                    <output id="searchDays" class="widget-days">Күндерді таңдаңыз</output>
+                </div>
+                <button type="submit" class="widget-submit">Іздеу</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<main class="home">
+    <div class="container">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+    </div>
+
+    <!-- ===== Санаттар ===== -->
+    <section class="section container" th:unless="${#lists.isEmpty(tiles)}">
+        <h2 class="section-title reveal">Санаттар</h2>
+        <div class="cat-grid">
+            <a th:each="t, st : ${tiles}" class="cat-tile reveal"
+               th:classappend="${t.car.imageFileName == null} ? 'is-illustration'"
+               th:href="@{/cars(category=${t.category})}">
+                <img th:replace="~{fragments/car :: photo(${t.car})}">
+                <span class="cat-name" th:text="${t.category.label}">Эконом</span>
+                <span class="cat-count" th:text="${t.count} + ' көлік'">3 көлік</span>
+                <span class="cat-arrow" th:classappend="${st.first} ? 'is-accent'" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M7 17 L17 7 M9 7 H17 V15"/></svg>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== Танымал көліктер ===== -->
+    <section class="section-band">
+        <div class="container">
+            <div class="section-head reveal">
+                <h2 class="section-title">Танымал көліктер</h2>
+                <a th:href="@{/cars}" class="pill pill-blue">Барлығы
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12 H19 M13 6 L19 12 L13 18"/></svg>
+                </a>
+            </div>
+            <div class="trend-row">
+                <a th:each="car, st : ${trending}" class="trend-card reveal"
+                   th:classappend="${st.first} ? 'is-active'"
+                   th:href="@{/cars/{id}(id=${car.id})}">
+                    <h3 th:text="${car.title}">BMW i4</h3>
+                    <div class="trend-photo"><img th:replace="~{fragments/car :: photo(${car})}"></div>
+                    <div class="trend-foot">
+                        <span class="price"><strong th:text="${#numbers.formatDecimal(car.pricePerDay, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'">15 000 ₸</strong><small>/тәулік</small></span>
+                        <span class="pill">Брондау</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Артықшылықтар ===== -->
+    <section class="perks" aria-label="Артықшылықтар">
+        <div class="container perks-row">
+            <div class="perk reveal">
+                <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="11" y="4" width="18" height="32" rx="3"/><path d="M17 31 h6 M15 15 l4 4 l7 -8"/></svg>
+                <p>Бірнеше минутта онлайн брондау</p>
+            </div>
+            <div class="perk reveal">
+                <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 32 L32 8"/><circle cx="12" cy="12" r="4"/><circle cx="28" cy="28" r="4"/></svg>
+                <p>7 тәуліктен −10%, 14 тәуліктен −15%</p>
+            </div>
+            <div class="perk reveal">
+                <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="21" r="13"/><path d="M20 13 v8 l5 4 M16 4 h8"/></svg>
+                <p>Расталғанға дейін тегін болдырмау</p>
+            </div>
+            <div class="perk reveal">
+                <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 4 h14 l8 8 v24 h-22 z M24 4 v8 h8 M15 22 h12 M15 28 h8"/></svg>
+                <p>Электронды келісімшарт, басып шығаруға дайын</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Промо ===== -->
+    <section class="promo">
+        <div class="container promo-inner">
+            <div class="promo-text reveal">
+                <h2>Ұзақ сапарға — үлкен жеңілдік</h2>
+                <p>14 тәулік және одан ұзақ жалдағанда жеңілдік автоматты түрде есептеледі.</p>
+                <a th:href="@{/cars}" class="pill pill-blue">Көлік таңдау</a>
+            </div>
+            <div class="promo-car reveal reveal-drive">
+                <th:block th:if="${promoCar != null}"><img th:replace="~{fragments/car :: photo(${promoCar})}"></th:block>
+                <img th:if="${promoCar == null}" class="is-illustration" th:src="@{/img/cars/suv.svg}" alt="">
+            </div>
+            <div class="promo-badge reveal">
+                <strong data-count="15" data-suffix="%">15%</strong>
+                <span>14 тәуліктен бастап барлық көлікке</span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Автопаркті басқару')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head">
+        <h1>Автопаркті басқару</h1>
+        <a th:href="@{/admin/cars/new}" class="btn">Көлік қосу</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>Көлік</th><th>Санат</th><th>Жыл</th><th>Баға / тәулік</th><th>Күйі</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="car : ${cars}">
+                <td>
+                    <div class="car-cell">
+                        <div class="thumb"><img th:replace="~{fragments/car :: photo(${car})}"></div>
+                        <div>
+                            <div th:text="${car.title}">Kia Rio</div>
+                            <span th:replace="~{fragments/car :: plate(${car.plateNumber})}"></span>
+                        </div>
+                    </div>
+                </td>
+                <td th:text="${car.category.label}"></td>
+                <td th:text="${car.manufactureYear}"></td>
+                <td th:text="${#numbers.formatDecimal(car.pricePerDay, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td>
+                <td><span th:class="'badge badge-car-' + ${#strings.toLowerCase(car.status.name())}" th:text="${car.status.label}"></span></td>
+                <td class="actions">
+                    <a th:href="@{/admin/cars/{id}/edit(id=${car.id})}" class="btn btn-sm btn-ghost">Өзгерту</a>
+                    <form th:action="@{/admin/cars/{id}/delete(id=${car.id})}" method="post" class="inline"
+                          data-confirm="Көлікті жоюға сенімдісіз бе?">
+                        <button type="submit" class="btn btn-sm btn-danger">Жою</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

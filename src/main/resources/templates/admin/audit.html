@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Аудит журналы')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <h1>Аудит журналы</h1>
+    <p class="muted">Соңғы 200 оқиға: кіру әрекеттері, бұғаттаулар, брондар, келісімшарттар, рұқсатсыз қол жеткізу.</p>
+
+    <div class="table-wrap"><table class="table small">
+        <thead>
+        <tr><th>Уақыты</th><th>Пайдаланушы</th><th>Әрекет</th><th>Толығырақ</th><th>IP</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${logs}"
+            th:classappend="${l.action == 'ACCESS_DENIED' or l.action == 'ACCOUNT_LOCKED' or l.action == 'LOGIN_FAILED'} ? 'row-warn'">
+            <td th:text="${#temporals.format(l.timestamp, 'dd.MM.yyyy HH:mm:ss')}"></td>
+            <td th:text="${l.username}"></td>
+            <td><code th:text="${l.action}"></code></td>
+            <td th:text="${l.details}"></td>
+            <td th:text="${l.ipAddress}"></td>
+        </tr>
+        </tbody>
+    </table></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

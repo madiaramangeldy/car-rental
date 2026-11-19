@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' — AutoRent'">AutoRent</title>
+    <link rel="icon" th:href="@{/img/favicon.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+
+<body>
+
+<!-- Жоғарғы мәзір: ақ «капсула» -->
+<header th:fragment="nav" class="topbar">
+    <div class="container">
+        <div class="nav-pill">
+            <a class="brand" th:href="@{/}" aria-label="AutoRent — басты бет">auto<span>R</span>ent</a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mainMenu">Мәзір</button>
+
+            <nav id="mainMenu" class="menu" aria-label="Негізгі мәзір">
+                <a th:href="@{/}">Басты бет</a>
+                <a th:href="@{/cars}">Автопарк</a>
+                <a sec:authorize="isAuthenticated()" th:href="@{/bookings/my}">Менің брондарым</a>
+                <a sec:authorize="hasAnyRole('MANAGER','ADMIN')" th:href="@{/manager/bookings}">Брондар</a>
+                <a sec:authorize="hasAnyRole('MANAGER','ADMIN')" th:href="@{/manager/contracts}">Келісімшарттар</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/cars}">Көліктер</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}">Пайдаланушылар</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/audit}">Аудит</a>
+            </nav>
+
+            <div class="account">
+                <th:block sec:authorize="isAuthenticated()">
+                    <span class="who" sec:authentication="name">user</span>
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="btn btn-dark btn-sm">Шығу</button>
+                    </form>
+                </th:block>
+                <th:block sec:authorize="isAnonymous()">
+                    <a th:href="@{/login}" class="link-quiet">Кіру</a>
+                    <a th:href="@{/register}" class="btn btn-dark btn-sm">Тіркелу</a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Хабарламалар. Сәтті әрекетте — анимацияланған белгі -->
+<div th:fragment="flash">
+    <div class="alert alert-success" th:if="${success}" role="status">
+        <svg class="check-icon" viewBox="0 0 52 52" aria-hidden="true">
+            <circle class="check-circle" cx="26" cy="26" r="23"/>
+            <path class="check-mark" d="M15 27 l7 7 l15 -15"/>
+        </svg>
+        <span th:text="${success}">Сәтті</span>
+    </div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}" role="alert"></div>
+</div>
+
+<footer th:fragment="footer" class="footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <a class="brand" th:href="@{/}">auto<span>R</span>ent</a>
+            <p>Қала ішіндегі сапарға да, ұзақ жолға да көлік. Онлайн брондау, электронды келісімшарт.</p>
+        </div>
+        <div>
+            <h4>Санаттар</h4>
+            <a th:href="@{/cars(category='ECONOMY')}">Эконом</a>
+            <a th:href="@{/cars(category='COMFORT')}">Комфорт</a>
+            <a th:href="@{/cars(category='BUSINESS')}">Бизнес</a>
+            <a th:href="@{/cars(category='SUV')}">Жол талғамайтын</a>
+            <a th:href="@{/cars(category='MINIVAN')}">Минивэн</a>
+        </div>
+        <div>
+            <h4>Клиентке</h4>
+            <a th:href="@{/cars}">Автопарк</a>
+            <a th:href="@{/bookings/my}">Менің брондарым</a>
+            <a th:href="@{/login}">Кіру</a>
+            <a th:href="@{/register}">Тіркелу</a>
+        </div>
+        <div>
+            <h4>Байланыс</h4>
+            <span>Алматы қ., Абай даңғ., 1</span>
+            <span>+7 727 000 00 00</span>
+            <span>info@autorent.kz</span>
+            <span>Күн сайын 08:00–22:00</span>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 AutoRent</span>
+        <span>Топтық жоба, «Фреймворктар» пәні</span>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Көлік фотосы; фото жүктелмесе — санат иллюстрациясы -->
+<img th:fragment="photo(car)"
+     th:src="${car.imageFileName != null} ? @{/images/cars/{f}(f=${car.imageFileName})} : @{/img/cars/{c}.svg(c=${#strings.toLowerCase(car.category.name())})}"
+     th:classappend="${car.imageFileName == null} ? 'is-illustration'"
+     th:alt="${car.title}" loading="lazy">
+
+<!-- Мемлекеттік нөмір KZ белгісі түрінде: 123ABC02 → [KZ] 123 ABC | 02 -->
+<span th:fragment="plate(number)" class="plate" th:title="${number}">
+    <span class="plate-flag" aria-hidden="true">KZ</span>
+    <span class="plate-main"
+          th:text="${#strings.substring(number, 0, 3)} + ' ' + ${#strings.substring(number, 3, #strings.length(number) - 2)}">101 AAA</span>
+    <span class="plate-region" th:text="${#strings.substring(number, #strings.length(number) - 2)}">02</span>
+</span>
+
+<!-- Көлік карточкасы (каталог және басты бет) -->
+<a th:fragment="card(car, from, to)" class="car-card reveal"
+   th:href="@{/cars/{id}(id=${car.id}, from=${from}, to=${to})}">
+    <div class="car-card-head">
+        <h3 th:text="${car.title}">Toyota Camry</h3>
+        <span class="car-category" th:text="${car.category.label}">Бизнес</span>
+    </div>
+    <div class="car-photo"><img th:replace="~{fragments/car :: photo(${car})}"></div>
+    <div class="car-card-foot">
+        <span class="price">
+            <strong th:text="${#numbers.formatDecimal(car.pricePerDay, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'">15 000 ₸</strong><small>/тәулік</small>
+        </span>
+        <span class="pill">Брондау</span>
+    </div>
+</a>
+
+</body>
+</html>

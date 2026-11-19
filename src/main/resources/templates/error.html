@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Қате')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="container narrow center">
+    <div class="card">
+        <h1 th:text="${status} ?: 'Қате'">404</h1>
+        <p th:if="${status == 404}">Сұралған бет немесе ресурс табылмады.</p>
+        <p th:unless="${status == 404}">Сұранысты өңдеу кезінде қате орын алды. Кейінірек қайталап көріңіз.</p>
+        <!-- Ішкі қате мәліметтері (stack trace) пайдаланушыға көрсетілмейді -->
+        <a th:href="@{/}" class="btn">Басты бетке</a>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

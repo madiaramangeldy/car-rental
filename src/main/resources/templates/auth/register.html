@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Тіркелу')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container narrow">
+    <div class="card auth-card">
+        <h1>Тіркелу</h1>
+        <form th:action="@{/register}" th:object="${registerForm}" method="post" class="form" novalidate>
+            <label>Аты-жөні
+                <input type="text" th:field="*{fullName}" required maxlength="100">
+                <span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+            </label>
+            <label>Email
+                <input type="email" th:field="*{email}" required maxlength="100" autocomplete="username">
+                <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+            </label>
+            <label>Телефон
+                <input type="tel" th:field="*{phone}" placeholder="+77011234567" required>
+                <span class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+            </label>
+            <label>Жүргізуші куәлігінің нөмірі
+                <input type="text" th:field="*{driverLicense}" required maxlength="12">
+                <span class="field-error" th:if="${#fields.hasErrors('driverLicense')}" th:errors="*{driverLicense}"></span>
+            </label>
+            <label>Құпиясөз <small class="muted">(кемінде 8 таңба, әріп + цифр)</small>
+                <input type="password" th:field="*{password}" required autocomplete="new-password">
+                <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+            </label>
+            <label>Құпиясөзді қайталаңыз
+                <input type="password" th:field="*{confirmPassword}" required autocomplete="new-password">
+                <span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></span>
+            </label>
+            <button type="submit" class="btn btn-block">Тіркелу</button>
+        </form>
+        <p class="muted center">Аккаунтыңыз бар ма? <a th:href="@{/login}">Кіру</a></p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

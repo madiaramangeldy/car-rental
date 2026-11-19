@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Брондарды басқару')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1>Брондарды басқару</h1>
+
+    <form th:action="@{/manager/bookings}" method="get" class="filters compact">
+        <label>Күйі
+            <select name="status">
+                <option value="">Барлығы</option>
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}"
+                        th:selected="${s == selectedStatus}"></option>
+            </select>
+        </label>
+        <button type="submit" class="btn">Сүзу</button>
+    </form>
+
+    <div class="empty" th:if="${#lists.isEmpty(bookings)}">Брондар табылмады.</div>
+
+    <div class="table-wrap" th:unless="${#lists.isEmpty(bookings)}"><table class="table">
+        <thead>
+        <tr>
+            <th>№</th><th>Клиент</th><th>Көлік</th><th>Кезең</th><th>Сома</th><th>Күйі</th><th>Әрекеттер</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${bookings}">
+            <td th:text="${b.id}"></td>
+            <td>
+                <div th:text="${b.user.fullName}"></div>
+                <small class="muted" th:text="${b.user.email} + ' · ' + ${b.user.phone}"></small>
+            </td>
+            <td>
+                <div class="car-cell">
+                    <div class="thumb"><img th:replace="~{fragments/car :: photo(${b.car})}"></div>
+                    <div>
+                        <div th:text="${b.car.title}">Kia Rio</div>
+                        <span th:replace="~{fragments/car :: plate(${b.car.plateNumber})}"></span>
+                    </div>
+                </div>
+            </td>
+            <td th:text="${#temporals.format(b.startDate, 'dd.MM.yyyy')} + ' — ' + ${#temporals.format(b.endDate, 'dd.MM.yyyy')} + ' (' + ${b.days} + ' тәул.)'"></td>
+            <td th:text="${#numbers.formatDecimal(b.totalPrice, 1, 'WHITESPACE', 0, 'POINT')} + ' ₸'"></td>
+            <td><span th:class="'badge badge-' + ${#strings.toLowerCase(b.status.name())}" th:text="${b.status.label}"></span></td>
+            <td class="actions">
+                <form th:if="${b.status.name() == 'PENDING'}" th:action="@{/manager/bookings/{id}/confirm(id=${b.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm">Растау</button>
+                </form>
+                <form th:if="${b.status.name() == 'CONFIRMED'}" th:action="@{/manager/bookings/{id}/complete(id=${b.id})}" method="post" class="inline"
+                      data-confirm="Көлік қайтарылды ма? Брон аяқталады.">
+                    <button type="submit" class="btn btn-sm">Аяқтау</button>
+                </form>
+                <form th:if="${b.status.name() == 'PENDING' or b.status.name() == 'CONFIRMED'}"
+                      th:action="@{/manager/bookings/{id}/cancel(id=${b.id})}" method="post" class="inline"
+                      data-confirm="Бронды болдырмауға сенімдісіз бе?">
+                    <button type="submit" class="btn btn-sm btn-danger">Болдырмау</button>
+                </form>
+                <a th:if="${b.contract != null}" th:href="@{/contracts/{id}(id=${b.contract.id})}" class="btn btn-sm btn-ghost">Келісімшарт</a>
+            </td>
+        </tr>
+        </tbody>
+    </table></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
